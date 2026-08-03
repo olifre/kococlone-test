@@ -16,7 +16,7 @@ jobs:
     steps:
       # Nur noch dein eigenes Repo auschecken!
       - name: Dein Repo auschecken
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # 1. Setup uv (ABER wir deaktivieren den unvollständigen automatischen Cache!)
       - name: Setup uv
