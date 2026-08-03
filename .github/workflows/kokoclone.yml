@@ -11,7 +11,7 @@ on:
 
 jobs:
   generate-speech:
-    runs-runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Dein eigenes Haupt-Repository auschecken
