@@ -65,7 +65,7 @@ jobs:
           uv run python run_clone.py
 
       - name: Audio-Ergebnis hochladen
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cloned-speech-output-uv
           path: output.wav
