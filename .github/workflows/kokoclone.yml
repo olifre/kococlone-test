@@ -18,11 +18,22 @@ jobs:
       - name: Dein Repo auschecken
         uses: actions/checkout@v4
 
-      # uv installieren und den automatischen uv-Cache aktivieren
+      # 1. Setup uv (ABER wir deaktivieren den unvollständigen automatischen Cache!)
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
         with:
-          enable-cache: true
+          enable-cache: false
+
+      # 2. DER TRICK: Wir cachen die echten, internen uv-Verzeichnisse manuell
+      - name: Cache uv Verzeichnis (Inklusive Git-Repos und PyTorch-CPU)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-full-cache-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-full-cache-
 
       - name: Cache Hugging Face Models
         uses: actions/cache@v4
