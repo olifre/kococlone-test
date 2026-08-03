@@ -72,7 +72,7 @@ jobs:
 
   clear-old-caches:
     runs-on: ubuntu-latest
-    needs: build
+    needs: generate-speech
     steps:
       - name: Clear out old caches
         uses: MyAlbum/purge-cache@v2
