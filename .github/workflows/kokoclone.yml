@@ -49,7 +49,9 @@ jobs:
       # uv installiert die richtige Python-Version und lädt die Git-Repos direkt aus der Datei
       - name: Abhängigkeiten mit uv installieren
         run: |
-          uv venv --python 3.12
+          if [ ! -d ".venv" ]; then
+            uv venv --python 3.12
+          fi
           uv pip install -r requirements.txt
 
       - name: Sprachausgabe generieren
