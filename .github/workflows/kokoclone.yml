@@ -1,0 +1,56 @@
+name: Run KokoClone TTS Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      text_to_speak:
+        description: 'Text für die Sprachausgabe'
+        required: true
+        default: 'This setup is completely rebuilt and verified.'
+        type: string
+
+jobs:
+  generate-speech:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Dein eigenes Repository auschecken (wo run_clone.py und reference.wav liegen)
+      - name: Dein Repo auschecken
+        uses: actions/checkout@v4
+
+      # Step 2: Das KokoClone Repo sauber über GitHubs offizielle Action in den Ordner 'kokoclone_src' laden
+      - name: KokoClone Quellcode sauber laden
+        uses: actions/checkout@v4
+        with:
+          repository: 'Ashish-Patnaik/kokoclone'
+          path: 'kokoclone_src'
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: System-Abhängigkeiten installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y espeak-ng ffmpeg
+
+      # Step 3: KokoClone sauber im Runner installieren (über das heruntergeladene Verzeichnis)
+      - name: KokoClone installieren
+        run: |
+          pip install --upgrade pip
+          pip install -e ./kokoclone_src
+
+      # Step 4: Dein Skript im Hauptverzeichnis ausführen
+      - name: Sprachausgabe generieren
+        env:
+          INPUT_TEXT: ${{ inputs.text_to_speak }}
+        run: |
+          python run_clone.py
+
+      # Step 5: Die fertige Datei aus dem Hauptverzeichnis hochladen
+      - name: Audio-Ergebnis hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloned-speech-output
+          path: output.wav
