@@ -24,22 +24,18 @@ jobs:
         with:
           enable-cache: false
 
-      # 2. DER TRICK: Wir cachen die echten, internen uv-Verzeichnisse manuell
-      - name: Cache uv Verzeichnis (Inklusive Git-Repos und PyTorch-CPU)
+      # JETZT MIT TORCH-HUB UND HUGGINGFACE-CACHE!
+      - name: All-in-One Cache (Packages + AI Models)
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/uv
+            ~/.cache/torch
+            ~/.cache/huggingface
             .venv
-          key: ${{ runner.os }}-uv-full-cache-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-kokoclone-v1-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-uv-full-cache-
-
-      - name: Cache Hugging Face Models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface
-          key: ${{ runner.os }}-hf-kokoclone-v1
+            ${{ runner.os }}-kokoclone-v1-
 
       - name: System-Abhängigkeiten installieren
         run: |
