@@ -32,6 +32,8 @@ jobs:
             ~/.cache/uv
             ~/.cache/torch
             ~/.cache/huggingface
+            model
+            voice
             .venv
           key: ${{ runner.os }}-kokoclone-v1-${{ hashFiles('requirements.txt') }}
           restore-keys: |
@@ -50,6 +52,11 @@ jobs:
           fi
           uv pip install -r requirements.txt
 
+      - name: Ordnerstrukturen vorbereiten
+        run: |
+          mkdir -p model
+          mkdir -p voice
+
       - name: Sprachausgabe generieren
         env:
           INPUT_TEXT: ${{ inputs.text_to_speak }}
@@ -62,3 +69,14 @@ jobs:
         with:
           name: cloned-speech-output-uv
           path: output.wav
+
+  clear-old-caches:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Clear out old caches
+        uses: MyAlbum/purge-cache@v2
+        with:
+          accessed: true # Purge caches by their last accessed time (default)
+          created: false # Purge caches by their created time (default)
+          max-age: 604800 # Leave only caches accessed in the last 7 days (default)
