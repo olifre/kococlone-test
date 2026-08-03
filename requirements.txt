@@ -1,6 +1,1 @@
-# Direkt-Links zu den Git-Repositories (pip & uv kompatibel)
 git+https://github.com/Ashish-Patnaik/kokoclone.git
-
-# Zusätzliche Absicherung für die Versionen
-onnxruntime>=1.16.0
-soundfile>=0.12.1
