@@ -1,4 +1,4 @@
-name: Run KokoClone TTS Generator
+name: Run KokoClone TTS Generator (Python 3.14)
 
 on:
   workflow_dispatch:
@@ -6,51 +6,63 @@ on:
       text_to_speak:
         description: 'Text für die Sprachausgabe'
         required: true
-        default: 'This setup is completely rebuilt and verified.'
+        default: 'This setup runs on the stable Python 3.14 environment.'
         type: string
 
 jobs:
   generate-speech:
-    runs-on: ubuntu-latest
+    runs-runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Dein eigenes Repository auschecken (wo run_clone.py und reference.wav liegen)
+      # Step 1: Dein eigenes Haupt-Repository auschecken
       - name: Dein Repo auschecken
         uses: actions/checkout@v4
 
-      # Step 2: Das KokoClone Repo sauber über GitHubs offizielle Action in den Ordner 'kokoclone_src' laden
-      - name: KokoClone Quellcode sauber laden
+      # Step 2: KokoClone Quellcode sauber über GitHub Action laden
+      - name: KokoClone Quellcode laden
         uses: actions/checkout@v4
         with:
           repository: 'Ashish-Patnaik/kokoclone'
           path: 'kokoclone_src'
 
-      - name: Python einrichten
+      # Step 3: Kanade-Tokenizer sauber über GitHub Action laden
+      - name: Kanade Tokenizer laden
+        uses: actions/checkout@v4
+        with:
+          repository: 'frothywater/kanade-tokenizer'
+          path: 'kanade_tokenizer_src'
+
+      # Step 4: Python 3.14 stable Umgebung bereitstellen
+      - name: Python 3.14 einrichten
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.14' # Zieht jetzt direkt die stabile Version ohne Behelfskonfiguration
 
+      # Step 5: System-Pakete hinzufügen (Wichtig für Audiokompression)
       - name: System-Abhängigkeiten installieren
         run: |
           sudo apt-get update
           sudo apt-get install -y espeak-ng ffmpeg
 
-      # Step 3: KokoClone sauber im Runner installieren (über das heruntergeladene Verzeichnis)
-      - name: KokoClone installieren
+      # Step 6: Installation der Quelldateien über pip
+      - name: Module aus den Checkout-Ordnern installieren
         run: |
-          pip install --upgrade pip
-          pip install -e ./kokoclone_src
+          python -m pip install --upgrade pip
+          # Tokenizer installieren (wird von KokoClone gebraucht)
+          python -m pip install -e ./kanade_tokenizer_src
+          # KokoClone selbst installieren
+          python -m pip install -e ./kokoclone_src
 
-      # Step 4: Dein Skript im Hauptverzeichnis ausführen
+      # Step 7: Ausführung deines Skripts
       - name: Sprachausgabe generieren
         env:
           INPUT_TEXT: ${{ inputs.text_to_speak }}
         run: |
           python run_clone.py
 
-      # Step 5: Die fertige Datei aus dem Hauptverzeichnis hochladen
+      # Step 8: .wav-Audiodatei sichern
       - name: Audio-Ergebnis hochladen
         uses: actions/upload-artifact@v4
         with:
-          name: cloned-speech-output
+          name: cloned-speech-output-3.14
           path: output.wav
