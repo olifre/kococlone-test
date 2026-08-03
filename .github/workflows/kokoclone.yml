@@ -1,4 +1,4 @@
-name: Run KokoClone TTS Generator (Python 3.14)
+name: Run KokoClone TTS Generator
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       text_to_speak:
         description: 'Text für die Sprachausgabe'
         required: true
-        default: 'This setup runs on the stable Python 3.14 environment.'
+        default: 'This setup runs on the stable Python 3.13 environment.'
         type: string
 
 jobs:
@@ -32,11 +32,11 @@ jobs:
           repository: 'frothywater/kanade-tokenizer'
           path: 'kanade_tokenizer_src'
 
-      # Step 4: Python 3.14 stable Umgebung bereitstellen
-      - name: Python 3.14 einrichten
+      # Step 4: Python 3.13 stable Umgebung bereitstellen
+      - name: Python 3.13 einrichten
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14' # Zieht jetzt direkt die stabile Version ohne Behelfskonfiguration
+          python-version: '3.13' # Zieht jetzt direkt die stabile Version ohne Behelfskonfiguration
 
       # Step 5: System-Pakete hinzufügen (Wichtig für Audiokompression)
       - name: System-Abhängigkeiten installieren
