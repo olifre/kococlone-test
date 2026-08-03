@@ -39,7 +39,7 @@ jobs:
       - name: Abhängigkeiten mit uv installieren
         run: |
           uv venv --python 3.12
-          uv pip install --no-extra -r requirements.txt
+          uv pip install -r requirements.txt
 
       - name: Sprachausgabe generieren
         env:

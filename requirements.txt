@@ -1,1 +1,3 @@
+# CPU pytorch
+--extra-index-url https://pytorch.org
 git+https://github.com/Ashish-Patnaik/kokoclone.git
