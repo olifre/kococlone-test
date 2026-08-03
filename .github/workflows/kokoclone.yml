@@ -1,4 +1,4 @@
-name: Run KokoClone TTS Generator
+name: Run KokoClone TTS
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       text_to_speak:
         description: 'Text für die Sprachausgabe'
         required: true
-        default: 'This setup runs on the stable Python 3.13 environment.'
+        default: 'This run is powered by uv and is blisteringly fast.'
         type: string
 
 jobs:
@@ -14,55 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Dein eigenes Haupt-Repository auschecken
+      # Nur noch dein eigenes Repo auschecken!
       - name: Dein Repo auschecken
         uses: actions/checkout@v4
 
-      # Step 2: KokoClone Quellcode sauber über GitHub Action laden
-      - name: KokoClone Quellcode laden
-        uses: actions/checkout@v4
+      # uv installieren und den automatischen uv-Cache aktivieren
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
         with:
-          repository: 'Ashish-Patnaik/kokoclone'
-          path: 'kokoclone_src'
+          enable-cache: true
 
-      # Step 3: Kanade-Tokenizer sauber über GitHub Action laden
-      - name: Kanade Tokenizer laden
-        uses: actions/checkout@v4
-        with:
-          repository: 'frothywater/kanade-tokenizer'
-          path: 'kanade_tokenizer_src'
-
-      # Step 4: Python 3.13 stable Umgebung bereitstellen
-      - name: Python 3.13 einrichten
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13' # Zieht jetzt direkt die stabile Version ohne Behelfskonfiguration
-
-      # Step 5: System-Pakete hinzufügen (Wichtig für Audiokompression)
       - name: System-Abhängigkeiten installieren
         run: |
           sudo apt-get update
           sudo apt-get install -y espeak-ng ffmpeg
 
-      # Step 6: Installation der Quelldateien über pip
-      - name: Module aus den Checkout-Ordnern installieren
+      # uv installiert die richtige Python-Version und lädt die Git-Repos direkt aus der Datei
+      - name: Abhängigkeiten mit uv installieren
         run: |
-          python -m pip install --upgrade pip
-          # Tokenizer installieren (wird von KokoClone gebraucht)
-          python -m pip install -e ./kanade_tokenizer_src
-          # KokoClone selbst installieren
-          python -m pip install -e ./kokoclone_src
+          uv venv --python 3.12
+          uv pip install -r requirements.txt
 
-      # Step 7: Ausführung deines Skripts
       - name: Sprachausgabe generieren
         env:
           INPUT_TEXT: ${{ inputs.text_to_speak }}
         run: |
-          python run_clone.py
+          # Skript innerhalb der uv-Umgebung ausführen
+          uv run python run_clone.py
 
-      # Step 8: .wav-Audiodatei sichern
       - name: Audio-Ergebnis hochladen
         uses: actions/upload-artifact@v4
         with:
-          name: cloned-speech-output-3.14
+          name: cloned-speech-output-uv
           path: output.wav
