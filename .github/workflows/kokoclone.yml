@@ -88,7 +88,7 @@ jobs:
           CACHE_IDS=$(echo "${CURR_CACHES}" | jq -r ".[] | select(.lastAccessedAt < \"${CUTOFF_DATE}\") | .id")
           echo "Current caches:"
           echo "${CURR_CACHES}" | jq
-          if [ -z "$CACHE_IDS" ]; then
+          if [ -z "${CACHE_IDS}" ]; then
             echo "No old unaccessed caches found."
           else
             for id in $CACHE_IDS; do
