@@ -84,10 +84,12 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           CUTOFF_DATE=$(date -d "7 days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
-          CACHE_IDS=$(gh cache list --limit 100 --json id,lastAccessedAt | jq -r ".[] | select(.lastAccessedAt < \"$CUTOFF_DATE\") | .id")
-          gh cache list --limit 100 --json id,lastAccessedAt
+          CURR_CACHES=$(gh cache list --limit 100 --json id,lastAccessedAt)
+          CACHE_IDS=$(echo "${CURR_CACHES}" | jq -r ".[] | select(.lastAccessedAt < \"${CUTOFF_DATE}\") | .id")
+          echo "Current caches:"
+          echo "${CURR_CACHES}" | jq
           if [ -z "$CACHE_IDS" ]; then
-            echo "No unused caches found."
+            echo "No old unaccessed caches found."
           else
             for id in $CACHE_IDS; do
               gh cache delete "$id"
